@@ -392,6 +392,7 @@ photos:['images/Liaison1.jpeg','images/Liaison2.jpeg','images/Liaison3.jpeg','im
     desc:'Supervised parallel sessions at a university conference, managing room logistics, timekeeping, and participant coordination.',
     highlights:['Supervised multiple concurrent academic sessions','Managed participant flow and timekeeping'],
     tags:['Supervision','Conference','UNISSA','Academic']},
+ photos:['images/Parallel1.jpeg','images/Parallel2.jpeg']},
   {id:4,cat:'university',big:false,glyph:'📋',bg:'#08071c',badge:'University',badgeCls:'dd',
     org:'Sultan Sharif Ali Islamic University (UNISSA)',role:'Conference Committee',
     period:'Jun 2023 · Aug 2024 · Jun 2025',location:'Brunei Darussalam',
@@ -501,22 +502,84 @@ function openE(id){
   const e=EXPS.find(x=>x.id===id);
   document.getElementById('em-t').textContent=e.role;
 
+  let currentSlide=0;
+  let slideTimer=null;
+
   const photosHTML = e.photos && e.photos.length
-    ? `<div style="margin-bottom:20px">
-        <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.22);margin-bottom:10px">Photos</div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px">
-          ${e.photos.map(p=>`
-            <div style="border-radius:8px;overflow:hidden;aspect-ratio:4/3;background:#111;cursor:pointer" onclick="window.open('${p}','_blank')">
-              <img src="${p}" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.3s"
-                onmouseover="this.style.transform='scale(1.05)'"
-                onmouseout="this.style.transform='scale(1)'"
+    ? `<div style="margin-bottom:20px;position:relative">
+        <!-- SLIDES -->
+        <div id="slide-track" style="border-radius:10px;overflow:hidden;aspect-ratio:16/9;background:#111;position:relative">
+          ${e.photos.map((p,i)=>`
+            <div class="slide" style="position:absolute;inset:0;opacity:${i===0?1:0};transition:opacity 0.6s ease">
+              <img src="${p}" style="width:100%;height:100%;object-fit:cover"
                 onerror="this.parentElement.style.display='none'">
             </div>`).join('')}
+          <!-- PREV / NEXT ARROWS -->
+          <button onclick="changeSlide(-1)" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);z-index:10;background:rgba(0,0,0,0.5);border:0.5px solid rgba(255,255,255,0.2);color:#fff;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center">&#8249;</button>
+          <button onclick="changeSlide(1)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);z-index:10;background:rgba(0,0,0,0.5);border:0.5px solid rgba(255,255,255,0.2);color:#fff;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center">&#8250;</button>
+          <!-- PHOTO COUNTER -->
+          <div style="position:absolute;bottom:10px;right:12px;z-index:10;background:rgba(0,0,0,0.5);padding:3px 10px;border-radius:20px;font-size:11px;color:rgba(255,255,255,0.7)" id="slide-counter">1 / ${e.photos.length}</div>
+        </div>
+        <!-- DOT INDICATORS -->
+        <div style="display:flex;justify-content:center;gap:6px;margin-top:10px" id="slide-dots">
+          ${e.photos.map((_,i)=>`
+            <div onclick="goSlide(${i})" style="width:${i===0?'20px':'6px'};height:6px;border-radius:3px;background:${i===0?'#378ADD':'rgba(255,255,255,0.2)'};cursor:pointer;transition:all 0.3s"></div>`).join('')}
         </div>
        </div>`
     : `<div class="modal-vis" style="background:${e.bg}">
          <span style="font-size:72px;position:relative;z-index:1">${e.glyph}</span>
        </div>`;
+
+  document.getElementById('em-bd').innerHTML=`
+    ${photosHTML}
+    <div style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#378ADD;margin-bottom:8px">${e.org}</div>
+    <div class="modal-name">${e.role}</div>
+    <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px">
+      <span style="font-size:12px;color:rgba(255,255,255,0.3)">📅 ${e.period}</span>
+      <span style="font-size:12px;color:rgba(255,255,255,0.3)">📍 ${e.location}</span>
+    </div>
+    <div class="modal-desc">${e.desc}</div>
+    <div class="modal-hl">
+      <div class="modal-hl-t">Highlights</div>
+      ${e.highlights.map(h=>`<div class="modal-hl-i"><div class="hldot"></div><span>${h}</span></div>`).join('')}
+    </div>
+    <div class="modal-tags">${e.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>`;
+
+  if(e.photos && e.photos.length > 1){
+    const slides=document.querySelectorAll('.slide');
+    const dots=document.getElementById('slide-dots').children;
+    const counter=document.getElementById('slide-counter');
+    const total=e.photos.length;
+
+    function goSlide(n){
+      slides[currentSlide].style.opacity=0;
+      dots[currentSlide].style.width='6px';
+      dots[currentSlide].style.background='rgba(255,255,255,0.2)';
+      currentSlide=(n+total)%total;
+      slides[currentSlide].style.opacity=1;
+      dots[currentSlide].style.width='20px';
+      dots[currentSlide].style.background='#378ADD';
+      counter.textContent=(currentSlide+1)+' / '+total;
+    }
+
+    window.goSlide=goSlide;
+    window.changeSlide=function(dir){
+      clearInterval(slideTimer);
+      goSlide(currentSlide+dir);
+      slideTimer=setInterval(()=>goSlide(currentSlide+1),3500);
+    };
+
+    slideTimer=setInterval(()=>goSlide(currentSlide+1),3500);
+
+    const modal=document.getElementById('em');
+    const observer=new MutationObserver(()=>{
+      if(!modal.classList.contains('on')){clearInterval(slideTimer);observer.disconnect()}
+    });
+    observer.observe(modal,{attributes:true,attributeFilter:['class']});
+  }
+
+  document.getElementById('em').classList.add('on');
+}
 
   document.getElementById('em-bd').innerHTML=`
     ${photosHTML}
