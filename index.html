@@ -374,12 +374,18 @@ const EXPS=[
     desc:'Progressive roles at the Belait District Department of Youth and Sports — starting as an intern and rising to Joint Secretary and Assistant Committee Member across multiple engagements.',
     highlights:['Intern: May 2024 – July 2024 — hands-on administrative experience','Joint Secretary: December 2024 — coordinated official correspondence','Assistant Committee Member: Aug 2024, Sep & Dec 2025'],
     tags:['Government','Youth Affairs','Administration','Secretary','Belait']},
-  {id:2,cat:'university',big:false,glyph:'🕌',bg:'#0d0a02',badge:'University',badgeCls:'dd',
-    org:'Sultan Sharif Ali Islamic University (UNISSA)',role:'Liaison Officer',
-    period:'Aug 2024 · Jun 2025',location:'Brunei Darussalam',
-    desc:'Served as Liaison Officer for official university engagements — coordinating between delegations, managing protocol, and ensuring smooth proceedings.',
-    highlights:['Coordinated official delegations and visiting dignitaries','Managed scheduling and protocol for senior officials','Represented UNISSA in a professional liaison capacity'],
-    tags:['Liaison','Protocol','UNISSA','Leadership']},
+  {id:2, cat:'university', big:true, glyph:'🕌', bg:'#0d0a02', badge:'University', badgeCls:'dd',
+  org:'Sultan Sharif Ali Islamic University (UNISSA)',
+  role:'Liaison Officer',
+  period:'Aug 2024 · Jun 2025', location:'Brunei Darussalam',
+  desc:'Served as Liaison Officer for official university engagements — coordinating between delegations, managing protocol, and ensuring smooth proceedings at institutional level events.',
+  highlights:[
+    'Coordinated official delegations and visiting dignitaries',
+    'Managed scheduling and protocol for senior university officials',
+    'Represented UNISSA in a professional liaison capacity',
+  ],
+  tags:['Liaison','Protocol','UNISSA','Leadership'],
+  photos:['liaison1.jpg','liaison2.jpg','liaison3.jpg']},
   {id:3,cat:'university',big:false,glyph:'🎓',bg:'#04100a',badge:'University',badgeCls:'dp',
     org:'Sultan Sharif Ali Islamic University (UNISSA)',role:'Parallel Session Supervisor',
     period:'May 2024',location:'Brunei Darussalam',
@@ -450,7 +456,9 @@ function expBig(e){
   return `<div class="mag-card" onclick="openE(${e.id})">
     <div class="mc-img" style="height:200px">
       <div class="mc-img-bg" style="background:${e.bg}"></div>${thG(800,200)}
-      <span class="mc-glyph">${e.glyph}</span><div class="mc-overlay"></div>
+      ${e.photos && e.photos.length
+  ? `<img src="${e.photos[0]}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.6">`
+  : `<span class="mc-glyph">${e.glyph}</span>`}<div class="mc-overlay"></div>
       <div class="mc-badge ${e.badgeCls}">${e.badge}</div><div class="mc-year">${e.period}</div>
     </div>
     <div class="mc-body">
@@ -492,17 +500,39 @@ function openW(id){
 function openE(id){
   const e=EXPS.find(x=>x.id===id);
   document.getElementById('em-t').textContent=e.role;
+
+  const photosHTML = e.photos && e.photos.length
+    ? `<div style="margin-bottom:20px">
+        <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.22);margin-bottom:10px">Photos</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px">
+          ${e.photos.map(p=>`
+            <div style="border-radius:8px;overflow:hidden;aspect-ratio:4/3;background:#111;cursor:pointer" onclick="window.open('${p}','_blank')">
+              <img src="${p}" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.3s"
+                onmouseover="this.style.transform='scale(1.05)'"
+                onmouseout="this.style.transform='scale(1)'"
+                onerror="this.parentElement.style.display='none'">
+            </div>`).join('')}
+        </div>
+       </div>`
+    : `<div class="modal-vis" style="background:${e.bg}">
+         <span style="font-size:72px;position:relative;z-index:1">${e.glyph}</span>
+       </div>`;
+
   document.getElementById('em-bd').innerHTML=`
-    <div class="modal-vis" style="background:${e.bg}">${thG(700,300)}<span style="font-size:72px;position:relative;z-index:1">${e.glyph}</span></div>
-    <div style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#378ADD;margin-bottom:8px">${e.org}</div>
+    ${photosHTML}
+    <div style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#D85A30;margin-bottom:8px">${e.org}</div>
     <div class="modal-name">${e.role}</div>
     <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px">
       <span style="font-size:12px;color:rgba(255,255,255,0.3)">📅 ${e.period}</span>
       <span style="font-size:12px;color:rgba(255,255,255,0.3)">📍 ${e.location}</span>
     </div>
     <div class="modal-desc">${e.desc}</div>
-    <div class="modal-hl"><div class="modal-hl-t">Highlights</div>${e.highlights.map(h=>`<div class="modal-hl-i"><div class="hldot"></div><span>${h}</span></div>`).join('')}</div>
+    <div class="modal-hl">
+      <div class="modal-hl-t">Highlights</div>
+      ${e.highlights.map(h=>`<div class="modal-hl-i"><div class="hldot"></div><span>${h}</span></div>`).join('')}
+    </div>
     <div class="modal-tags">${e.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>`;
+
   document.getElementById('em').classList.add('on');
 }
 
