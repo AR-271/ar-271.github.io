@@ -52,9 +52,6 @@
   .h-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
   .h-num{font-size:19px;font-weight:600;color:#fff}
   .h-lbl{font-size:11px;color:rgba(255,255,255,0.32);margin-top:2px}
-  .hero-scroll{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);z-index:2;display:flex;flex-direction:column;align-items:center;gap:6px;color:rgba(255,255,255,0.18);font-size:10px;letter-spacing:2px;text-transform:uppercase}
-  .s-line{width:0.5px;height:32px;background:rgba(255,255,255,0.12);animation:sline 2s ease-in-out infinite}
-  @keyframes sline{0%,100%{opacity:0.2}50%{opacity:0.7}}
 
   /* WORK */
   .work-top{display:flex;justify-content:space-between;align-items:flex-end;padding:36px 36px 0;flex-wrap:wrap;gap:12px}
@@ -217,7 +214,6 @@
         <div class="h-card" onclick="go('exp')"><div class="h-icon" style="background:#0d0a04">🌟</div><div><div class="h-num">UNISSA</div><div class="h-lbl">Dean's List 2024/25</div></div></div>
       </div>
     </div>
-    <div class="hero-scroll"><div class="s-line"></div>scroll</div>
   </div>
 </div>
 
@@ -552,7 +548,7 @@ setTimeout(initCanvas,80);
   function makeShape(){
     return{
       type:TYPES[Math.floor(Math.random()*TYPES.length)],
-      size:Math.random()*60+20,
+      size:Math.random()*80+40,
       x:Math.random()*W, y:Math.random()*H,
       vx:(Math.random()-0.5)*0.3,
       vy:(Math.random()-0.5)*0.3,
